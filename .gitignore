@@ -1,0 +1,30 @@
+# Compiled bytecode and distribution artifacts
+compiled/
+*.zo
+*.dep
+*.rkt~
+*~
+.DS_Store
+
+# Write-ahead logs and runtime data directories
+data/
+wal/
+*.wal
+*.lock
+
+# Temporary scratch and coverage logs
+scratch/
+coverage/
+*.prof
+
+# C client build artifacts
+vernier/sdk/c/*.o
+vernier/sdk/c/*.a
+vernier/sdk/c/*.so
+vernier/sdk/c/*.dylib
+vernier/sdk/c/test_client
+
+# Python cache artifacts
+__pycache__/
+*.pyc
+.pytest_cache/
