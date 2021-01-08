@@ -170,7 +170,10 @@
   (struct-copy span s [attributes updated]))
 
 (define (span-get-attribute s key [default #f])
-  (hash-ref (span-attributes s) key default))
+  (or (hash-ref (span-attributes s) key #f)
+      (and (string? key) (hash-ref (span-attributes s) (string->symbol key) #f))
+      (and (symbol? key) (hash-ref (span-attributes s) (symbol->string key) #f))
+      default))
 
 ;; Event and link appenders
 (define (span-add-event s evt)
