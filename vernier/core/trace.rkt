@@ -43,7 +43,8 @@
   [trace-find-children (-> trace-record? string? (listof span?))]
   [trace-find-roots (-> trace-record? (listof span?))]
   [trace-has-errors? (-> trace-record? boolean?)]
-  [trace->summary (-> trace-record? trace-summary?)]))
+  [trace->summary (-> trace-record? trace-summary?)]
+  [trace-summary->hash (-> trace-summary? hash?)]))
 
 ;; Summary structure for rapid dashboard queries
 (struct trace-summary (trace-id
@@ -189,3 +190,14 @@
    (length (trace-record-spans tr))
    (trace-record-error-count tr)
    (trace-record-services tr)))
+
+;; Converts summary to JSON-serializable dictionary
+(define (trace-summary->hash s)
+  (hash 'trace_id (trace-summary-trace-id s)
+        'root_name (trace-summary-root-name s)
+        'root_service (trace-summary-root-service s)
+        'start_time (trace-summary-start-time s)
+        'duration (trace-summary-duration s)
+        'span_count (trace-summary-span-count s)
+        'error_count (trace-summary-error-count s)
+        'services (trace-summary-services s)))
