@@ -58,13 +58,21 @@
 ;; Constructs storage engine
 (define (make-storage-engine #:wal-dir [wal-dir #f])
   (define wal (and wal-dir (make-wal-writer wal-dir)))
-  (storage-engine (make-ring-buffer 32768)
-                  wal
-                  (box (make-partition-manager))
-                  (box (make-inverted-index))
-                  (box (hash))
-                  (box 0)
-                  (make-semaphore 1)))
+  (define engine
+    (storage-engine (make-ring-buffer 32768)
+                    wal
+                    (box (make-partition-manager))
+                    (box (make-inverted-index))
+                    (box (hash))
+                    (box 0)
+                    (make-semaphore 1)))
+  ;; If recovering from WAL directory, replay recorded spans into memory
+  (when wal-dir
+    (define replayed (wal-replay-directory wal-dir))
+    (for ([s (in-list replayed)])
+      (ring-buffer-push! (storage-engine-ring-buf engine) s))
+    (storage-flush! engine))
+  engine)
 
 ;; Ingests a span into buffer and WAL
 (define (storage-write-span! engine s)
